@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gra Impostor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background-color: rgba(22, 33, 62, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            max-width: 900px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            color: #e94560;
+            margin-bottom: 30px;
+            font-size: 2.8rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .section {
+            display: none;
+            margin-bottom: 20px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        input, button, select {
+            padding: 14px 24px;
+            margin: 10px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input {
+            width: 220px;
+            background-color: #0f3460;
+            color: white;
+            border: 2px solid #e94560;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        input::placeholder {
+            color: #ccc;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #4cc9f0;
+            box-shadow: 0 0 10px rgba(79, 201, 240, 0.5);
+        }
+        
+        button {
+            background-color: #e94560;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        #startGameBtn:not(:disabled) {
+            background-color: #2ecc71;
+        }
+        
+        #startGameBtn:not(:disabled):hover {
+            background-color: #27ae60;
+        }
+        
+        .player-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        .player-card {
+            background: linear-gradient(145deg, #0f3460, #1a3c72);
+            border-radius: 12px;
+            padding: 20px;
+            width: 140px;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #e94560, #4cc9f0);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .player-card:hover {
+            transform: translateY(-8px) rotate(2deg);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .player-card:hover::before {
+            opacity: 1;
+        }
+        
+        .player-card.revealed {
+            background: linear-gradient(145deg, #2e5a9c, #3a6ac0);
+        }
+        
+        .player-name {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+        }
+        
+        .player-word {
+            font-size: 1.3rem;
+            min-height: 35px;
+            color: #2ecc71;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .player-word.impostor {
+            color: #e94560;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .message {
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 12px;
+            background: linear-gradient(145deg, #0f3460, #1a3c72);
+            font-size: 1.3rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .impostor-warning {
+            color: #e94560;
+            font-weight: bold;
+            margin-top: 25px;
+            font-size: 1.3rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+        }
+        
+        .game-info {
+            margin: 25px 0;
+            padding: 20px;
+            background: linear-gradient(145deg, #0f3460, #1a3c72);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .player-card:hover .remove-btn {
+            opacity: 1;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .instruction {
+            margin: 15px 0;
+            font-size: 1.1rem;
+            color: #4cc9f0;
+        }
+        
+        .presentation-card {
+            width: 300px;
+            min-height: 200px;
+            margin: 0 auto;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .current-player-indicator {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #4cc9f0;
+        }
+        
+        .reveal-btn {
+            margin-top: 20px;
+            background-color: #4cc9f0;
+        }
+        
+        .reveal-btn:hover {
+            background-color: #3aa8d0;
+        }
+        
+        .hidden-word {
+            filter: blur(8px);
+            user-select: none;
+        }
+        
+        .settings-panel {
+            background: linear-gradient(145deg, #0f3460, #1a3c72);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+            text-align: left;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .slider-value {
+            font-weight: bold;
+            color: #4cc9f0;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            width: 90%;
+            height: 15px;
+            border-radius: 10px;
+            background: #0f3460;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #e94560;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #e94560;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+        }
+        
+        .impostors-info {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            color: #e94560;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gra Impostor</h1>
+        
+        <div id="setupSection" class="section">
+            <h2>Dodaj graczy (3-8)</h2>
+            <input type="text" id="playerName" placeholder="Wpisz imię gracza" maxlength="15">
+            <button id="addPlayerBtn">Dodaj gracza</button>
+            
+            <div class="settings-panel">
+                <h3>Ustawienia impostorów</h3>
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Szansa na dodatkowego impostora:</span>
+                        <span class="slider-value" id="impostorChanceValue">30%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="30" class="slider" id="impostorChanceSlider">
+                </div>
+                <div class="impostors-info" id="impostorsInfo">
+                    Prawdopodobieństwo: 1 impostor (gwarantowany) + szansa na dodatkowego
+                </div>
+            </div>
+            
+            <button id="startGameBtn" disabled>Rozpocznij grę</button>
+            
+            <div class="instruction">Dodaj przynajmniej 3 graczy, aby rozpocząć grę</div>
+            
+            <div id="playersList" class="player-list"></div>
+        </div>
+        
+        <div id="presentationSection" class="section">
+            <div class="game-info">
+                <p>Przedstaw hasła graczom po kolei. Pamiętaj, że <span id="impostorCountText">jeden z graczy to IMPOSTOR!</span></p>
+            </div>
+            
+            <div class="current-player-indicator" id="currentPlayerIndicator">
+                Gracz 1 z <span id="totalPlayers">0</span>
+            </div>
+            
+            <div id="presentationCard" class="player-card presentation-card">
+                <div class="player-name" id="presentationPlayerName">Gracz</div>
+                <div class="player-word hidden-word" id="presentationWord">Kliknij przycisk, aby zobaczyć hasło</div>
+                <button id="revealWordBtn" class="reveal-btn">Pokaż hasło</button>
+            </div>
+            
+            <div class="navigation-buttons">
+                <button id="prevPlayerBtn">Poprzedni</button>
+                <button id="nextPlayerBtn">Następny</button>
+                <button id="finishPresentationBtn">Zakończ prezentację</button>
+            </div>
+        </div>
+        
+        <div id="gameSection" class="section">
+            <div class="game-info">
+                <p>Kliknij na gracza, aby zobaczyć jego słowo. <span id="gameImpostorCountText">Jeden z graczy to IMPOSTOR!</span></p>
+            </div>
+            <div id="gameBoard" class="player-list"></div>
+            <button id="newGameBtn">Nowa gra</button>
+        </div>
+    </div>
+
+    <script>
+        // Baza 30 losowych słów
+       const words = [
+    // Jedzenie i napoje
+    "PIZZA", "HAMBURGER", "SUSHI", "MAKARON", "SER", "CZEKOLADA", "LODY", "KAWA", "HERBATA", "SOK",
+
+    // Zwierzęta
+    "KOT", "PIES", "LEW", "TYGRYS", "SŁOŃ", "WIELORYB", "NIEDŹWIEDŹ", "WILK", "KOŃ", "KROWA",
+
+    // Zawody
+    "LEKARZ", "NAUCZYCIEL", "INŻYNIER", "PIŁKARZ", "AKTOR", "MURARZ", "KELNER", "KIEROWCA", "POLICJANT", "STRAŻAK",
+
+    // Sport
+    "PIŁKA", "KOSZYKÓWKA", "SIATKÓWKA", "TENIS", "BOKS", "PŁYWANIE", "BIEGANIE", "ROWER", "NARCIARSTWO", "ŁYŻWIARSTWO",
+
+    // Przyroda
+    "GÓRA", "RZEKA", "JEZIORO", "LAS", "OCEAN", "WYSPA", "PUSTYNIA", "WULKAN", "WODOSPAD", "KANION",
+
+    // Technologia
+    "KOMPUTER", "TELEFON", "INTERNET", "ROBOT", "DRON", "APLIKACJA", "WIADOMOŚĆ", "EMAIL", "CHMURA", "BITCOIN",
+
+    // Transport
+    "SAMOLOT", "POCIĄG", "AUTOBUS", "TRAMWAJ", "METRO", "TAXI", "HELIKOPTER", "PROM", "ŁODŹ", "MOTOCYKL",
+
+    // Muzyka
+    "GITARA", "PIANINO", "SKRZYPCE", "PERKUSJA", "TRĄBKA", "FORTEPIAN", "FLET", "HARFA", "AKORDEON", "KONCERT",
+
+    // Sztuka
+    "OBRAZ", "RZEŹBA", "FOTOGRAFIA", "FILM", "TEATR", "GALERIA", "MUZEUM", "PORTRAIT", "PEJZAŻ", "ABSTRAKCJA",
+
+    // Zdrowie
+    "SZPITAL", "LEKARSTWO", "WITAMINA", "OPERACJA", "BADANIE", "ZDROWIE", "CHOROBA", "WIRUS", "DIETA", "FITNESS",
+
+    // Miasta
+    "WARSZAWA", "KRAKÓW", "LONDYN", "PARYŻ", "BERLIN", "TOKIO", "NOWY JORK", "RZYM", "MOSKWA", "SYDNEY",
+
+    // Państwa
+    "POLSKA", "NIEMCY", "FRANCJA", "WŁOCHY", "HISZPANIA", "ANGLIA", "ROSJA", "CHINY", "JAPONIA", "KANADA",
+
+    // Sławne osoby
+    "EINSTEIN", "MICKIEWICZ", "CHOPIN", "KOPERNIK", "CURIE", "DAVINCI", "SHAKESPEARE", "MOZART", "BEETHOVEN", "PICASSO",
+
+    // Wydarzenia historyczne
+    "WOJNA", "POKÓJ", "REWOLUCJA", "KORONACJA", "ODKRYCIE", "WYNALEZIENIE", "POWSTANIE", "TRAKTAT", "SOJUSZ", "ROZPAD",
+
+    // Memy internetowe
+    "DOGE", "GRUMPY CAT", "RICKROLL", "TROLLFACE", "WAIT WHAT", "FAIL", "EPIC", "LOL", "OMG", "YOLO",
+
+    // YouTuberzy
+    "PEWDIEPIE", "MRBEAST", "KSI", "LOGAN PAUL", "JACKSEPTICEYE", "MARKIPLIER", "NIGAHIGA", "SMOSH", "JENNA MARBLES", "DAVID DOBRIK",
+
+    // Gry komputerowe
+    "MINECRAFT", "FORNITE", "GTA", "LOL", "CSGO", "WOW", "SKYRIM", "FIFA", "POKEMON", "MARIO",
+
+    // Film i TV
+    "HARRY POTTER", "STAR WARS", "AVENGERS", "FRIENDS", "GAME OF THRONES", "BREAKING BAD", "STRANGER THINGS", "LORD OF THE RINGS", "PULP FICTION", "TITANIC",
+
+    // Ubrania
+    "KOSZULA", "SPODNIE", "SUKIENKA", "BUTY", "CZAPKA", "KURTKA", "SWETER", "JEANS", "PŁASZCZ", "SKARPETKI",
+
+    // Pogoda
+    "DESZCZ", "ŚNIEG", "SŁOŃCE", "WIATR", "BURZA", "CHMURA", "TĘCZA", "MGŁA", "GRAD", "UPAŁ",
+
+    // Emocje
+    "RADOŚĆ", "SMUTEK", "GNIEW", "STRACH", "ZASKOCZENIE", "MILOŚĆ", "NIEZNAK", "WSTRĘT", "ZAZDROŚĆ", "DUMNA",
+
+    // Kolory
+    "CZERWONY", "NIEBIESKI", "ZIELONY", "ŻÓŁTY", "POMARAŃCZOWY", "FIOLETOWY", "RÓŻOWY", "BRĄZOWY", "CZARNY", "BIAŁY",
+
+    // Książki
+    "BIBLIA", "KORAN", "HARRY POTTER", "WŁADCA PIERŚCIENI", "HOBBIT", "DZIADY", "PAN TADEUSZ", "ZBRODNIA I KARA", "ANNA KARENINA", "WICHROWE WZGÓRZA",
+
+    // Mitologia
+    "ZEUS", "POSEJDON", "HADES", "AFRODYTA", "ATHENA", "APOLLO", "HERMES", "HERAKLES", "ODYSEJA", "TROJA",
+
+    // Rośliny
+    "RÓŻA", "TULIPAN", "SŁONECZNIK", "DĄB", "SOSNA", "PALMA", "KACTUS", "TRAWA", "MEH", "ALOES",
+
+    // Zjawiska
+    "TĘCZA", "ZORZA", "Zaćmienie", "TRZĘSIENIE ZIEMI", "TSUNAMI", "HURAGAN", "TORNADO", "POWÓDŹ", "POŻAR", "LAWINA",
+
+    // Zawody sportowe
+    "OLIMPIADA", "MUNDIAL", "EURO", "WIMBLEDON", "SUPER BOWL", "TOUR DE FRANCE", "FORMULA 1", "NBA FINALS", "WORLD SERIES", "ROLAND GARROS",
+
+    // Pojazdy
+    "ŁÓDŹ PODWODNA", "BALON", "STEROWIEC", "SKUTER ŚNIEGOWY", "QUAD", "SKATEBOARD", "WROTKI", "DŻIP", "FURMAnka", "RYKSZA",
+
+    // Instrumenty
+    "SAKSOFON", "WIOLONCZELA", "KONTRABAS", "FAGOT", "OBÓJ", "LIRA", "MANDOLINA", "BANJO", "UKULELE", "KSYLOfon",
+
+    // Tańce
+    "WALC", "TANGO", "SAMBA", "CHA CHA", "RUEDA", "BACHATA", "SALSA", "HIPHOP", "BALLET", "BREAKDANCE",
+
+    // Święta
+    "BOŻE NARODZENIE", "WIELKANOC", "HALLOWEEN", "SYLWESTER", "WALENTYNKI", "DZIEN MATKI", "DZIEN OJCA", "ANDRZEJKI", "MARDI GRAS", "OKTOBERFEST",
+
+    // Jedzenie narodowe
+    "PIEROGI", "PIZZA", "SUSHI", "TACOS", "PAELLA", "CROISSANT", "BAGIETKA", "HAMBURGER", "KIMCHI", "KEBAB",
+
+    // Wynalazki
+    "ŻARÓWKA", "TELEFON", "RADIO", "TELEWIZOR", "KOMPUTER", "INTERNET", "DRUK", "SILNIK", "SAMOCHÓD", "SAMOLOT",
+
+    // Social media
+    "FACEBOOK", "INSTAGRAM", "TWITTER", "TIKTOK", "SNAPCHAT", "LINKEDIN", "PINTEREST", "WHATSAPP", "TELEGRAM", "DISCORD",
+
+    // Marki
+    "APPLE", "SAMSUNG", "NIKE", "ADIDAS", "COCA COLA", "PEPSI", "MCDONALDS", "KFC", "TOYOTA", "MERCEDES",
+
+    // Płatności
+    "GOTÓWKA", "KARTA", "BLIK", "PAYPAL", "BITCOIN", "PRZELEW", "CZEK", "KRYPTOWALUTA", "PORTFEL", "BANKOMAT",
+
+    // Edukacja
+    "SZKOŁA", "UNIWERSYTET", "NAUKA", "EGZAMIN", "TEST", "OCENA", "DYPLOM", "STYPENDIUM", "WYKŁAD", "LABORATORIUM",
+
+    // Dom
+    "ŁÓŻKO", "STÓŁ", "KRZESŁO", "SOFA", "SZAFa", "LUSTRO", "ZEGAR", "DYWAN", "ŻALUZJE", "ROLETY",
+
+    // Hobby
+    "CZYTANIE", "MALOWANIE", "GOTOWANIE", "OGRODNICTWO", "WĘDKARSTWO", "FOTOGRAFIA", "KOLEKCJONERSTWO", "MODELARSTWO", "HAFT", "DRUK 3D",
+
+    // Kosmos
+    "Księżyc", "MARS", "SATURN", "NEBULA", "GALAKTYKA", "KOMETA", "ASTEROIDA", "CZARNA DZIURA", "SPACEX", "TELESKOP",
+
+    // Zawody medyczne
+    "CHIRURG", "PEDIATRA", "DERMATOLOG", "OKULISTA", "DENTYSTA", "PSYCHIATRA", "POŁOŻNA", "RATOWNIK", "FARMACEUTA", "DIETETYK"
+];
+
+        let players = [];
+        let impostorIndexes = [];
+        let currentWord = "";
+        let savedPlayers = [];
+        let currentPresentationIndex = 0;
+        let isWordRevealed = false;
+        let impostorChance = 30;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const setupSection = document.getElementById('setupSection');
+            const presentationSection = document.getElementById('presentationSection');
+            const gameSection = document.getElementById('gameSection');
+            const playerNameInput = document.getElementById('playerName');
+            const addPlayerBtn = document.getElementById('addPlayerBtn');
+            const startGameBtn = document.getElementById('startGameBtn');
+            const playersList = document.getElementById('playersList');
+            const gameBoard = document.getElementById('gameBoard');
+            const newGameBtn = document.getElementById('newGameBtn');
+            const impostorChanceSlider = document.getElementById('impostorChanceSlider');
+            const impostorChanceValue = document.getElementById('impostorChanceValue');
+            const impostorsInfo = document.getElementById('impostorsInfo');
+            const impostorCountText = document.getElementById('impostorCountText');
+            const gameImpostorCountText = document.getElementById('gameImpostorCountText');
+            
+            // Elementy sekcji prezentacji
+            const currentPlayerIndicator = document.getElementById('currentPlayerIndicator');
+            const totalPlayersSpan = document.getElementById('totalPlayers');
+            const presentationPlayerName = document.getElementById('presentationPlayerName');
+            const presentationWord = document.getElementById('presentationWord');
+            const revealWordBtn = document.getElementById('revealWordBtn');
+            const prevPlayerBtn = document.getElementById('prevPlayerBtn');
+            const nextPlayerBtn = document.getElementById('nextPlayerBtn');
+            const finishPresentationBtn = document.getElementById('finishPresentationBtn');
+
+            // Pokazujemy sekcję konfiguracji na starcie
+            setupSection.style.display = 'block';
+
+            // Inicjalizacja suwaka szansy na impostora
+            impostorChanceSlider.addEventListener('input', function() {
+                impostorChance = parseInt(this.value);
+                impostorChanceValue.textContent = `${impostorChance}%`;
+                updateImpostorsInfo();
+            });
+
+            // Aktualizacja informacji o impostorach
+            function updateImpostorsInfo() {
+                impostorsInfo.textContent = `Prawdopodobieństwo: 1 impostor (gwarantowany) + szansa na dodatkowego (${impostorChance}%)`;
+            }
+
+            // Funkcja dodająca gracza
+            addPlayerBtn.addEventListener('click', function() {
+                const name = playerNameInput.value.trim();
+                if (name && players.length < 8) {
+                    players.push({ name: name, isImpostor: false });
+                    playerNameInput.value = '';
+                    updatePlayersList();
+                    
+                    // Aktywuj przycisk startu gdy mamy co najmniej 3 graczy
+                    if (players.length >= 3) {
+                        startGameBtn.disabled = false;
+                    }
+                    
+                    // Dezaktywuj dodawanie jeśli osiągnięto maksymalną liczbę graczy
+                    if (players.length === 8) {
+                        addPlayerBtn.disabled = true;
+                        playerNameInput.disabled = true;
+                        playerNameInput.placeholder = 'Osiągnięto maksymalną liczbę graczy';
+                    }
+                }
+            });
+
+            // Obsługa Enter w polu tekstowym
+            playerNameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addPlayerBtn.click();
+                }
+            });
+
+            // Rozpoczęcie gry
+            startGameBtn.addEventListener('click', function() {
+                // Losowanie słowa
+                currentWord = words[Math.floor(Math.random() * words.length)];
+                
+                // Resetowanie statusu impostora dla wszystkich graczy
+                players.forEach(player => player.isImpostor = false);
+                impostorIndexes = [];
+                
+                // Gwarantowany przynajmniej jeden impostor
+                const guaranteedImpostor = Math.floor(Math.random() * players.length);
+                players[guaranteedImpostor].isImpostor = true;
+                impostorIndexes.push(guaranteedImpostor);
+                
+                // Sprawdzanie szansy na dodatkowych impostorów
+                for (let i = 0; i < players.length; i++) {
+                    if (i !== guaranteedImpostor) {
+                        if (Math.random() * 100 < impostorChance) {
+                            players[i].isImpostor = true;
+                            impostorIndexes.push(i);
+                        }
+                    }
+                }
+                
+                // Aktualizacja tekstu informującego o liczbie impostorów
+                const impostorCount = impostorIndexes.length;
+                let impostorText = "";
+                if (impostorCount === 1) {
+                    impostorText = "Jeden z graczy to IMPOSTOR!";
+                } else {
+                    impostorText = `${impostorCount} graczy to IMPOSTORZY!`;
+                }
+                impostorCountText.textContent = impostorText;
+                gameImpostorCountText.textContent = impostorText;
+                
+                // Zapisz listę graczy na przyszłość
+                savedPlayers = [...players];
+                
+                // Przełączenie widoku na prezentację
+                setupSection.style.display = 'none';
+                presentationSection.style.display = 'block';
+                
+                // Inicjalizacja prezentacji
+                initPresentation();
+            });
+
+            // Nowa gra
+            newGameBtn.addEventListener('click', function() {
+                // Przywróć zapisaną listę graczy
+                players = savedPlayers.map(player => ({ ...player, isImpostor: false }));
+                
+                // Przełączenie widoku
+                gameSection.style.display = 'none';
+                setupSection.style.display = 'block';
+                
+                // Odśwież listę graczy
+                updatePlayersList();
+                
+                // Aktywuj przycisk startu jeśli mamy wystarczającą liczbę graczy
+                startGameBtn.disabled = players.length < 3;
+            });
+
+            // Inicjalizacja prezentacji
+            function initPresentation() {
+                currentPresentationIndex = 0;
+                totalPlayersSpan.textContent = players.length;
+                isWordRevealed = false;
+                updatePresentationCard();
+                
+                // Ustawienie stanu przycisków nawigacyjnych
+                prevPlayerBtn.disabled = true;
+                if (players.length <= 1) {
+                    nextPlayerBtn.disabled = true;
+                }
+            }
+            
+            // Aktualizacja karty prezentacji
+            function updatePresentationCard() {
+                const player = players[currentPresentationIndex];
+                presentationPlayerName.textContent = player.name;
+                
+                if (isWordRevealed) {
+                    if (player.isImpostor) {
+                        presentationWord.textContent = "IMPOSTOR";
+                        presentationWord.className = "player-word impostor";
+                    } else {
+                        presentationWord.textContent = currentWord;
+                        presentationWord.className = "player-word";
+                    }
+                    revealWordBtn.textContent = "Ukryj hasło";
+                } else {
+                    presentationWord.textContent = "Kliknij przycisk, aby zobaczyć hasło";
+                    presentationWord.className = "player-word hidden-word";
+                    revealWordBtn.textContent = "Pokaż hasło";
+                }
+                
+                // Aktualizacja wskaźnika bieżącego gracza
+                currentPlayerIndicator.textContent = `Gracz ${currentPresentationIndex + 1} z ${players.length}`;
+                
+                // Aktualizacja stanu przycisków nawigacyjnych
+                prevPlayerBtn.disabled = currentPresentationIndex === 0;
+                nextPlayerBtn.disabled = currentPresentationIndex === players.length - 1;
+            }
+            
+            // Obsługa przycisku pokaż/ukryj hasło
+            revealWordBtn.addEventListener('click', function() {
+                isWordRevealed = !isWordRevealed;
+                updatePresentationCard();
+            });
+            
+            // Obsługa przycisku następnego gracza
+            nextPlayerBtn.addEventListener('click', function() {
+                if (currentPresentationIndex < players.length - 1) {
+                    currentPresentationIndex++;
+                    isWordRevealed = false;
+                    updatePresentationCard();
+                }
+            });
+            
+            // Obsługa przycisku poprzedniego gracza
+            prevPlayerBtn.addEventListener('click', function() {
+                if (currentPresentationIndex > 0) {
+                    currentPresentationIndex--;
+                    isWordRevealed = false;
+                    updatePresentationCard();
+                }
+            });
+            
+            // Zakończenie prezentacji i przejście do gry
+            finishPresentationBtn.addEventListener('click', function() {
+                presentationSection.style.display = 'none';
+                gameSection.style.display = 'block';
+                renderGameBoard();
+            });
+
+            // Funkcja aktualizująca listę graczy w sekcji konfiguracji
+            function updatePlayersList() {
+                playersList.innerHTML = '';
+                players.forEach((player, index) => {
+                    const playerEl = document.createElement('div');
+                    playerEl.className = 'player-card';
+                    playerEl.innerHTML = `
+                        <div class="player-name">${player.name}</div>
+                        <div>Gracz ${index + 1}</div>
+                        <button class="remove-btn" data-index="${index}">×</button>
+                    `;
+                    playersList.appendChild(playerEl);
+                });
+                
+                // Dodaj obsługę usuwania graczy
+                document.querySelectorAll('.remove-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Zapobiegaj wywołaniu kliknięcia na karcie
+                        const index = parseInt(this.getAttribute('data-index'));
+                        players.splice(index, 1);
+                        updatePlayersList();
+                        
+                        // Aktywuj/dezaktywuj przycisk startu
+                        startGameBtn.disabled = players.length < 3;
+                        
+                        // Aktywuj ponownie dodawanie jeśli liczba graczy spadła poniżej 8
+                        if (players.length < 8) {
+                            addPlayerBtn.disabled = false;
+                            playerNameInput.disabled = false;
+                            playerNameInput.placeholder = 'Wpisz imię gracza';
+                        }
+                    });
+                });
+            }
+
+            // Funkcja renderująca planszę gry
+            function renderGameBoard() {
+                gameBoard.innerHTML = '';
+                players.forEach((player, index) => {
+                    const playerCard = document.createElement('div');
+                    playerCard.className = 'player-card';
+                    playerCard.dataset.index = index;
+                    playerCard.innerHTML = `
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-word"></div>
+                    `;
+                    
+                    playerCard.addEventListener('click', function() {
+                        const wordElement = this.querySelector('.player-word');
+                        
+                        if (wordElement.textContent === '') {
+                            // Ujawnij słowo
+                            if (player.isImpostor) {
+                                wordElement.textContent = 'IMPOSTOR';
+                                wordElement.classList.add('impostor');
+                            } else {
+                                wordElement.textContent = currentWord;
+                            }
+                            this.classList.add('revealed');
+                        } else {
+                            // Ukryj słowo
+                            wordElement.textContent = '';
+                            wordElement.classList.remove('impostor');
+                            this.classList.remove('revealed');
+                        }
+                    });
+                    
+                    gameBoard.appendChild(playerCard);
+                });
+            }
+
+            // Funkcja resetująca grę
+            function resetGame() {
+                players = [];
+                impostorIndexes = [];
+                currentWord = '';
+                playersList.innerHTML = '';
+                gameBoard.innerHTML = '';
+                addPlayerBtn.disabled = false;
+                playerNameInput.disabled = false;
+                playerNameInput.placeholder = 'Wpisz imię gracza';
+                startGameBtn.disabled = true;
+            }
+            
+            // Inicjalizacja informacji o impostorach
+            updateImpostorsInfo();
+        });
+    </script>
+</body>
+</html>
