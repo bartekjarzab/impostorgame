@@ -5,13 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gra Impostor</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: #fff;
             text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -21,38 +25,54 @@
         .container {
             background-color: rgba(22, 33, 62, 0.9);
             border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-            max-width: 900px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
             width: 100%;
+            max-width: 900px;
             backdrop-filter: blur(10px);
         }
         
         h1 {
             color: #e94560;
-            margin-bottom: 30px;
-            font-size: 2.8rem;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        h2 {
+            font-size: 1.6rem;
+        }
+        
+        h3 {
+            font-size: 1.3rem;
         }
         
         .section {
             display: none;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             width: 100%;
             animation: fadeIn 0.5s ease-in-out;
         }
         
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
         input, button, select {
-            padding: 14px 24px;
-            margin: 10px;
-            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 8px;
             border: none;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
         }
         
         input {
-            width: 220px;
             background-color: #0f3460;
             color: white;
             border: 2px solid #e94560;
@@ -66,7 +86,7 @@
         input:focus {
             outline: none;
             border-color: #4cc9f0;
-            box-shadow: 0 0 10px rgba(79, 201, 240, 0.5);
+            box-shadow: 0 0 8px rgba(79, 201, 240, 0.5);
         }
         
         button {
@@ -75,6 +95,7 @@
             cursor: pointer;
             font-weight: bold;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            min-height: 44px;
         }
         
         button:hover {
@@ -106,23 +127,23 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            margin-top: 25px;
+            gap: 15px;
+            margin-top: 20px;
         }
         
         .player-card {
             background: linear-gradient(145deg, #0f3460, #1a3c72);
-            border-radius: 12px;
-            padding: 20px;
-            width: 140px;
-            min-height: 140px;
+            border-radius: 10px;
+            padding: 15px;
+            width: 120px;
+            min-height: 120px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
         }
@@ -133,15 +154,15 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 5px;
+            height: 4px;
             background: linear-gradient(90deg, #e94560, #4cc9f0);
             opacity: 0;
             transition: opacity 0.3s ease;
         }
         
         .player-card:hover {
-            transform: translateY(-8px) rotate(2deg);
-            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
+            transform: translateY(-5px) rotate(2deg);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
         }
         
         .player-card:hover::before {
@@ -154,14 +175,14 @@
         
         .player-name {
             font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-size: 1rem;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
         }
         
         .player-word {
-            font-size: 1.3rem;
-            min-height: 35px;
+            font-size: 1.1rem;
+            min-height: 30px;
             color: #2ecc71;
             font-weight: bold;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
@@ -174,28 +195,29 @@
         }
         
         .message {
-            margin: 25px 0;
-            padding: 20px;
-            border-radius: 12px;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
             background: linear-gradient(145deg, #0f3460, #1a3c72);
-            font-size: 1.3rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         
         .impostor-warning {
             color: #e94560;
             font-weight: bold;
-            margin-top: 25px;
-            font-size: 1.3rem;
+            margin-top: 20px;
+            font-size: 1.1rem;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
         }
         
         .game-info {
-            margin: 25px 0;
-            padding: 20px;
+            margin: 20px 0;
+            padding: 15px;
             background: linear-gradient(145deg, #0f3460, #1a3c72);
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            font-size: 0.95rem;
         }
         
         .remove-btn {
@@ -206,15 +228,16 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            font-size: 14px;
+            width: 22px;
+            height: 22px;
+            font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            opacity: 0;
+            opacity: 0.7;
             transition: opacity 0.3s ease;
+            z-index: 10;
         }
         
         .player-card:hover .remove-btn {
@@ -233,32 +256,40 @@
         }
         
         .instruction {
-            margin: 15px 0;
-            font-size: 1.1rem;
+            margin: 12px 0;
+            font-size: 0.95rem;
             color: #4cc9f0;
         }
         
         .presentation-card {
-            width: 300px;
-            min-height: 200px;
+            width: 90%;
+            max-width: 300px;
+            min-height: 180px;
             margin: 0 auto;
         }
         
         .navigation-buttons {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .navigation-buttons button {
+            flex: 1;
+            min-width: 120px;
+            max-width: 200px;
         }
         
         .current-player-indicator {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
             color: #4cc9f0;
         }
         
         .reveal-btn {
-            margin-top: 20px;
+            margin-top: 15px;
             background-color: #4cc9f0;
         }
         
@@ -267,20 +298,20 @@
         }
         
         .hidden-word {
-            filter: blur(8px);
+            filter: blur(6px);
             user-select: none;
         }
         
         .settings-panel {
             background: linear-gradient(145deg, #0f3460, #1a3c72);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         
         .slider-container {
-            margin: 15px 0;
+            margin: 12px 0;
             text-align: left;
         }
         
@@ -288,6 +319,7 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
+            font-size: 0.95rem;
         }
         
         .slider-value {
@@ -297,9 +329,9 @@
         
         .slider {
             -webkit-appearance: none;
-            width: 90%;
-            height: 15px;
-            border-radius: 10px;
+            width: 100%;
+            height: 12px;
+            border-radius: 8px;
             background: #0f3460;
             outline: none;
         }
@@ -307,27 +339,141 @@
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 25px;
-            height: 25px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             background: #e94560;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+            box-shadow: 0 0 8px rgba(233, 69, 96, 0.5);
         }
         
         .slider::-moz-range-thumb {
-            width: 25px;
-            height: 25px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             background: #e94560;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+            box-shadow: 0 0 8px rgba(233, 69, 96, 0.5);
         }
         
         .impostors-info {
-            margin-top: 15px;
-            font-size: 1.1rem;
+            margin-top: 12px;
+            font-size: 0.95rem;
             color: #e94560;
+        }
+        
+        /* Responsywność dla małych urządzeń */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                border-radius: 12px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 15px;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+            
+            h3 {
+                font-size: 1.2rem;
+            }
+            
+            input, button, select {
+                padding: 10px 14px;
+                margin: 6px 0;
+                font-size: 0.95rem;
+            }
+            
+            .player-card {
+                width: calc(50% - 20px);
+                min-height: 110px;
+                padding: 12px;
+            }
+            
+            .player-name {
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+            
+            .player-word {
+                font-size: 1rem;
+            }
+            
+            .presentation-card {
+                min-height: 160px;
+            }
+            
+            .navigation-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .navigation-buttons button {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .message, .game-info {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+            
+            .instruction {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            .player-card {
+                width: 100%;
+                max-width: 180px;
+            }
+            
+            .input-group {
+                width: 100%;
+            }
+            
+            input, button, select {
+                max-width: none;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .player-card {
+                min-height: 100px;
+            }
+            
+            .player-name {
+                font-size: 0.85rem;
+            }
+            
+            .player-word {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -337,8 +483,10 @@
         
         <div id="setupSection" class="section">
             <h2>Dodaj graczy (3-8)</h2>
-            <input type="text" id="playerName" placeholder="Wpisz imię gracza" maxlength="15">
-            <button id="addPlayerBtn">Dodaj gracza</button>
+            <div class="input-group">
+                <input type="text" id="playerName" placeholder="Wpisz imię gracza" maxlength="15">
+                <button id="addPlayerBtn">Dodaj gracza</button>
+            </div>
             
             <div class="settings-panel">
                 <h3>Ustawienia impostorów</h3>
@@ -394,130 +542,11 @@
 
     <script>
         // Baza 30 losowych słów
-       const words = [
-    // Jedzenie i napoje
-    "PIZZA", "HAMBURGER", "SUSHI", "MAKARON", "SER", "CZEKOLADA", "LODY", "KAWA", "HERBATA", "SOK",
-
-    // Zwierzęta
-    "KOT", "PIES", "LEW", "TYGRYS", "SŁOŃ", "WIELORYB", "NIEDŹWIEDŹ", "WILK", "KOŃ", "KROWA",
-
-    // Zawody
-    "LEKARZ", "NAUCZYCIEL", "INŻYNIER", "PIŁKARZ", "AKTOR", "MURARZ", "KELNER", "KIEROWCA", "POLICJANT", "STRAŻAK",
-
-    // Sport
-    "PIŁKA", "KOSZYKÓWKA", "SIATKÓWKA", "TENIS", "BOKS", "PŁYWANIE", "BIEGANIE", "ROWER", "NARCIARSTWO", "ŁYŻWIARSTWO",
-
-    // Przyroda
-    "GÓRA", "RZEKA", "JEZIORO", "LAS", "OCEAN", "WYSPA", "PUSTYNIA", "WULKAN", "WODOSPAD", "KANION",
-
-    // Technologia
-    "KOMPUTER", "TELEFON", "INTERNET", "ROBOT", "DRON", "APLIKACJA", "WIADOMOŚĆ", "EMAIL", "CHMURA", "BITCOIN",
-
-    // Transport
-    "SAMOLOT", "POCIĄG", "AUTOBUS", "TRAMWAJ", "METRO", "TAXI", "HELIKOPTER", "PROM", "ŁODŹ", "MOTOCYKL",
-
-    // Muzyka
-    "GITARA", "PIANINO", "SKRZYPCE", "PERKUSJA", "TRĄBKA", "FORTEPIAN", "FLET", "HARFA", "AKORDEON", "KONCERT",
-
-    // Sztuka
-    "OBRAZ", "RZEŹBA", "FOTOGRAFIA", "FILM", "TEATR", "GALERIA", "MUZEUM", "PORTRAIT", "PEJZAŻ", "ABSTRAKCJA",
-
-    // Zdrowie
-    "SZPITAL", "LEKARSTWO", "WITAMINA", "OPERACJA", "BADANIE", "ZDROWIE", "CHOROBA", "WIRUS", "DIETA", "FITNESS",
-
-    // Miasta
-    "WARSZAWA", "KRAKÓW", "LONDYN", "PARYŻ", "BERLIN", "TOKIO", "NOWY JORK", "RZYM", "MOSKWA", "SYDNEY",
-
-    // Państwa
-    "POLSKA", "NIEMCY", "FRANCJA", "WŁOCHY", "HISZPANIA", "ANGLIA", "ROSJA", "CHINY", "JAPONIA", "KANADA",
-
-    // Sławne osoby
-    "EINSTEIN", "MICKIEWICZ", "CHOPIN", "KOPERNIK", "CURIE", "DAVINCI", "SHAKESPEARE", "MOZART", "BEETHOVEN", "PICASSO",
-
-    // Wydarzenia historyczne
-    "WOJNA", "POKÓJ", "REWOLUCJA", "KORONACJA", "ODKRYCIE", "WYNALEZIENIE", "POWSTANIE", "TRAKTAT", "SOJUSZ", "ROZPAD",
-
-    // Memy internetowe
-    "DOGE", "GRUMPY CAT", "RICKROLL", "TROLLFACE", "WAIT WHAT", "FAIL", "EPIC", "LOL", "OMG", "YOLO",
-
-    // YouTuberzy
-    "PEWDIEPIE", "MRBEAST", "KSI", "LOGAN PAUL", "JACKSEPTICEYE", "MARKIPLIER", "NIGAHIGA", "SMOSH", "JENNA MARBLES", "DAVID DOBRIK",
-
-    // Gry komputerowe
-    "MINECRAFT", "FORNITE", "GTA", "LOL", "CSGO", "WOW", "SKYRIM", "FIFA", "POKEMON", "MARIO",
-
-    // Film i TV
-    "HARRY POTTER", "STAR WARS", "AVENGERS", "FRIENDS", "GAME OF THRONES", "BREAKING BAD", "STRANGER THINGS", "LORD OF THE RINGS", "PULP FICTION", "TITANIC",
-
-    // Ubrania
-    "KOSZULA", "SPODNIE", "SUKIENKA", "BUTY", "CZAPKA", "KURTKA", "SWETER", "JEANS", "PŁASZCZ", "SKARPETKI",
-
-    // Pogoda
-    "DESZCZ", "ŚNIEG", "SŁOŃCE", "WIATR", "BURZA", "CHMURA", "TĘCZA", "MGŁA", "GRAD", "UPAŁ",
-
-    // Emocje
-    "RADOŚĆ", "SMUTEK", "GNIEW", "STRACH", "ZASKOCZENIE", "MILOŚĆ", "NIEZNAK", "WSTRĘT", "ZAZDROŚĆ", "DUMNA",
-
-    // Kolory
-    "CZERWONY", "NIEBIESKI", "ZIELONY", "ŻÓŁTY", "POMARAŃCZOWY", "FIOLETOWY", "RÓŻOWY", "BRĄZOWY", "CZARNY", "BIAŁY",
-
-    // Książki
-    "BIBLIA", "KORAN", "HARRY POTTER", "WŁADCA PIERŚCIENI", "HOBBIT", "DZIADY", "PAN TADEUSZ", "ZBRODNIA I KARA", "ANNA KARENINA", "WICHROWE WZGÓRZA",
-
-    // Mitologia
-    "ZEUS", "POSEJDON", "HADES", "AFRODYTA", "ATHENA", "APOLLO", "HERMES", "HERAKLES", "ODYSEJA", "TROJA",
-
-    // Rośliny
-    "RÓŻA", "TULIPAN", "SŁONECZNIK", "DĄB", "SOSNA", "PALMA", "KACTUS", "TRAWA", "MEH", "ALOES",
-
-    // Zjawiska
-    "TĘCZA", "ZORZA", "Zaćmienie", "TRZĘSIENIE ZIEMI", "TSUNAMI", "HURAGAN", "TORNADO", "POWÓDŹ", "POŻAR", "LAWINA",
-
-    // Zawody sportowe
-    "OLIMPIADA", "MUNDIAL", "EURO", "WIMBLEDON", "SUPER BOWL", "TOUR DE FRANCE", "FORMULA 1", "NBA FINALS", "WORLD SERIES", "ROLAND GARROS",
-
-    // Pojazdy
-    "ŁÓDŹ PODWODNA", "BALON", "STEROWIEC", "SKUTER ŚNIEGOWY", "QUAD", "SKATEBOARD", "WROTKI", "DŻIP", "FURMAnka", "RYKSZA",
-
-    // Instrumenty
-    "SAKSOFON", "WIOLONCZELA", "KONTRABAS", "FAGOT", "OBÓJ", "LIRA", "MANDOLINA", "BANJO", "UKULELE", "KSYLOfon",
-
-    // Tańce
-    "WALC", "TANGO", "SAMBA", "CHA CHA", "RUEDA", "BACHATA", "SALSA", "HIPHOP", "BALLET", "BREAKDANCE",
-
-    // Święta
-    "BOŻE NARODZENIE", "WIELKANOC", "HALLOWEEN", "SYLWESTER", "WALENTYNKI", "DZIEN MATKI", "DZIEN OJCA", "ANDRZEJKI", "MARDI GRAS", "OKTOBERFEST",
-
-    // Jedzenie narodowe
-    "PIEROGI", "PIZZA", "SUSHI", "TACOS", "PAELLA", "CROISSANT", "BAGIETKA", "HAMBURGER", "KIMCHI", "KEBAB",
-
-    // Wynalazki
-    "ŻARÓWKA", "TELEFON", "RADIO", "TELEWIZOR", "KOMPUTER", "INTERNET", "DRUK", "SILNIK", "SAMOCHÓD", "SAMOLOT",
-
-    // Social media
-    "FACEBOOK", "INSTAGRAM", "TWITTER", "TIKTOK", "SNAPCHAT", "LINKEDIN", "PINTEREST", "WHATSAPP", "TELEGRAM", "DISCORD",
-
-    // Marki
-    "APPLE", "SAMSUNG", "NIKE", "ADIDAS", "COCA COLA", "PEPSI", "MCDONALDS", "KFC", "TOYOTA", "MERCEDES",
-
-    // Płatności
-    "GOTÓWKA", "KARTA", "BLIK", "PAYPAL", "BITCOIN", "PRZELEW", "CZEK", "KRYPTOWALUTA", "PORTFEL", "BANKOMAT",
-
-    // Edukacja
-    "SZKOŁA", "UNIWERSYTET", "NAUKA", "EGZAMIN", "TEST", "OCENA", "DYPLOM", "STYPENDIUM", "WYKŁAD", "LABORATORIUM",
-
-    // Dom
-    "ŁÓŻKO", "STÓŁ", "KRZESŁO", "SOFA", "SZAFa", "LUSTRO", "ZEGAR", "DYWAN", "ŻALUZJE", "ROLETY",
-
-    // Hobby
-    "CZYTANIE", "MALOWANIE", "GOTOWANIE", "OGRODNICTWO", "WĘDKARSTWO", "FOTOGRAFIA", "KOLEKCJONERSTWO", "MODELARSTWO", "HAFT", "DRUK 3D",
-
-    // Kosmos
-    "Księżyc", "MARS", "SATURN", "NEBULA", "GALAKTYKA", "KOMETA", "ASTEROIDA", "CZARNA DZIURA", "SPACEX", "TELESKOP",
-
-    // Zawody medyczne
-    "CHIRURG", "PEDIATRA", "DERMATOLOG", "OKULISTA", "DENTYSTA", "PSYCHIATRA", "POŁOŻNA", "RATOWNIK", "FARMACEUTA", "DIETETYK"
-];
+        const words = [
+            "PIZZA", "HAMBURGER", "SUSHI", "MAKARON", "SER", "CZEKOLADA", "LODY", "KAWA", "HERBATA", "SOK",
+            "KOT", "PIES", "LEW", "TYGRYS", "SŁOŃ", "WIELORYB", "NIEDŹWIEDŹ", "WILK", "KOŃ", "KROWA",
+            "LEKARZ", "NAUCZYCIEL", "INŻYNIER", "PIŁKARZ", "AKTOR", "MURARZ", "KELNER", "KIEROWCA", "POLICJANT", "STRAŻAK"
+        ];
 
         let players = [];
         let impostorIndexes = [];
